@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="RiskCoordinator GroupBasedGrid Power Set 集合优化设计：完整正文、架构流程与交互式集合示例。"><meta name="source-sha256" content="696cc6ef10e4e906cb6da8e609ee392bfb33808f34310110f70a203cf202c30f"><title>RiskCoordinator · Power Set 集合优化架构设计</title><style>
+:root{color-scheme:light;--bg:#f4f6fa;--surface:#fff;--text:#233248;--muted:#5b6b81;--line:#dbe3ee;--accent:#215cbd;--soft:#edf3ff;--teal:#087b73;--teal-soft:#e8f6f3;--amber:#86520a;--amber-soft:#fff4df;--code:#edf1f7;--shadow:0 12px 38px #23324809}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#121923;--surface:#1b2635;--text:#e6edf8;--muted:#b0bfd3;--line:#35445b;--accent:#8bb7ff;--soft:#243955;--teal:#85d9c7;--teal-soft:#203d3b;--amber:#ffd490;--amber-soft:#443721;--code:#243143;--shadow:none}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.8 "Segoe UI","Microsoft YaHei",sans-serif}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:4px}button{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:7px 14px;border-radius:9px}button:hover{background:var(--soft)}.topbar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:12px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}.brand{font-weight:700;letter-spacing:.02em}.topbar .actions{margin-left:auto;display:flex;gap:8px}.shell{max-width:1550px;margin:auto;display:grid;grid-template-columns:252px minmax(0,1fr);gap:36px;padding:36px 32px}.sidebar{position:sticky;top:98px;align-self:start;max-height:calc(100vh - 120px);overflow:auto;font-size:14px}.sidebar h2{font-size:13px;color:var(--muted);letter-spacing:.12em;margin:0 0 16px}.sidebar a{display:block;color:var(--muted);padding:8px 11px;border-left:2px solid transparent;line-height:1.55}.sidebar a.active{border-color:var(--accent);background:var(--soft);color:var(--accent)}.sidebar .meta{margin-top:24px;border-top:1px solid var(--line);padding-top:18px;font-size:12px;overflow-wrap:anywhere}.main{min-width:0}.hero{padding:8px 0 32px}.eyebrow{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.09em}.hero h1{font-size:clamp(28px,3.3vw,43px);line-height:1.35;margin:14px 0 18px;letter-spacing:-.03em}.hero .lead{font-size:18px;max-width:850px;color:var(--muted);margin:0 0 20px}.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{font-size:13px;padding:4px 10px;border-radius:6px;background:var(--soft);color:var(--accent)}.badge.status{background:var(--amber-soft);color:var(--amber)}.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:26px;box-shadow:var(--shadow)}.panel h2{font-size:23px;line-height:1.4;margin:0 0 12px}.intro{color:var(--muted);margin:0 0 24px}.formula-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.formula{padding:20px;background:var(--soft);border-radius:12px}.formula strong{font-size:27px;display:block;color:var(--accent);line-height:1.5}.formula span{font-size:14px}.callout{border-left:3px solid var(--teal);padding:12px 18px;background:var(--teal-soft);margin-top:20px;line-height:1.7}.callout.warning{border-color:var(--amber);background:var(--amber-soft)}.role-lanes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:20px 0}.role-lane{border:1px solid var(--line);border-radius:12px;padding:18px}.role-lane strong{color:var(--accent)}.role-lane p{font-size:14px;margin:8px 0 0}.flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px;margin:25px 0}.node{position:relative;background:var(--soft);border-radius:11px;padding:16px 12px}.node:not(:last-child):after{content:'→';position:absolute;right:-17px;top:35%;color:var(--muted)}.node b{display:block;font-size:14px;line-height:1.5;overflow-wrap:anywhere}.node small{display:block;font-size:13px;color:var(--muted);line-height:1.6;margin-top:9px}.node .step{color:var(--accent);font-size:12px;font-weight:700;margin-bottom:8px;display:block}.feedback{background:var(--teal-soft);border-radius:10px;padding:14px 18px;font-size:14px;color:var(--teal)}.feedback code{background:transparent;color:inherit}.boundary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:20px}.boundary-grid>div{border-top:2px solid var(--line);padding-top:12px;font-size:14px}.boundary-grid b{display:block;margin-bottom:6px}.member-controls{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}.member-controls label{display:flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:9px}.member-controls input{width:18px;height:18px;accent-color:var(--accent)}.demo-layout{display:grid;grid-template-columns:1fr 1.15fr;gap:25px}.subset-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.subset-grid button{font-size:14px;text-align:left}.subset-grid button[aria-pressed="true"]{background:var(--accent);color:var(--surface);border-color:var(--accent)}:root[data-theme="dark"] .subset-grid button[aria-pressed="true"]{color:#121923}.demo-result{background:var(--teal-soft);padding:18px;border-radius:10px;overflow-wrap:anywhere}.demo-result strong{display:block;color:var(--teal)}.demo-result p{margin:10px 0;font-size:14px}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px;margin:20px 0}th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--soft);font-weight:600}td code{overflow-wrap:anywhere}code{font-family:Consolas,"Cascadia Code",monospace;font-size:.87em;background:var(--code);padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}pre{background:var(--code);padding:20px;border-radius:10px;overflow:auto;font-size:14px;line-height:1.7}pre code{background:none;padding:0;white-space:pre;overflow-wrap:normal}.source-section{border-top:1px solid var(--line);padding-top:34px;margin:32px 0}.source-section h2{font-size:26px;line-height:1.45;margin:0 0 22px}.source-section h3{font-size:20px;line-height:1.5;margin:30px 0 12px}.source-section h4{font-size:17px}p{margin:12px 0 18px}li{margin:6px 0}li::marker{color:var(--accent)}.document-head{margin-top:46px}.document-head h2{font-size:25px;margin-bottom:6px}.document-head p{font-size:14px;color:var(--muted)}details{padding:12px 16px;background:var(--code);border-radius:9px;margin-top:18px}summary{cursor:pointer;font-size:14px;color:var(--muted)}.timeline{list-style:none;counter-reset:stage;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.timeline li{counter-increment:stage;border-left:3px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0;padding:13px 18px;font-size:14px;margin:0}.timeline li:before{content:counter(stage,decimal-leading-zero);font-weight:700;color:var(--accent);margin-right:12px}.growth{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:22px 0}.growth input{accent-color:var(--accent);flex:1;min-width:150px}.growth output{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}.footer{border-top:1px solid var(--line);padding-top:22px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}.skip{position:absolute;left:-9999px}.skip:focus{left:12px;top:10px;z-index:10;background:var(--surface);padding:10px}@media(max-width:1120px){.shell{grid-template-columns:208px minmax(0,1fr);gap:24px;padding:24px}.flow{grid-template-columns:1fr}.node:not(:last-child):after{content:'↓';top:auto;bottom:-25px;right:50%}.node{padding:16px}.demo-layout{grid-template-columns:1fr}}@media(max-width:760px){html{scroll-padding-top:120px}.shell{display:block;padding:20px 16px}.sidebar{position:static;max-height:none;margin-bottom:26px}.sidebar nav{display:flex;overflow-x:auto;gap:6px;padding-bottom:6px}.sidebar a{flex:0 0 auto;border-left:0;border-bottom:2px solid transparent}.sidebar a.active{border-color:var(--accent)}.sidebar h2,.sidebar .meta{display:none}.topbar{padding:10px 16px;font-size:14px;gap:8px}.topbar .actions{gap:5px}.topbar button{padding:6px 9px;font-size:13px}.panel{padding:20px}.formula-row,.role-lanes,.boundary-grid,.timeline{grid-template-columns:1fr}.hero .lead{font-size:16px}.source-section h2{font-size:23px}.source-section h3{font-size:19px}.source-section{padding-top:26px}pre{padding:14px}.subset-grid{grid-template-columns:1fr 1fr}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--bg:#fff;--surface:#fff;--text:#172334;--muted:#405065;--line:#d2dbe7;--accent:#215cbd;--soft:#f1f5fc;--teal:#087b73;--teal-soft:#eef8f5;--amber:#86520a;--amber-soft:#fff4df;--code:#f3f5f8;--shadow:none}.topbar,.sidebar,.growth,.member-controls,.subset-grid,.skip{display:none}.shell{display:block;padding:0}.hero h1{font-size:30px}.panel{box-shadow:none;break-inside:avoid;padding:18px}.flow{grid-template-columns:1fr}.node:not(:last-child):after{display:none}.source-section{break-before:auto}pre{white-space:pre-wrap;overflow:visible}pre code{white-space:pre-wrap}table{font-size:11px}.footer{font-size:11px}a{color:inherit}}
+</style></head>
+<body><a class="skip" href="#main">跳转到文档正文</a>
+<header class="topbar"><span class="brand">G-logic / 架构阅读</span><span class="badge status">设计文档 · 未实施</span><div class="actions"><button type="button" id="theme-button" aria-pressed="false">深色阅读</button><button type="button" id="print-button">打印 / PDF</button></div></header>
+<div class="shell"><aside class="sidebar" aria-label="章节导航"><h2>阅读导航</h2><nav><a href="#visual-overview" class="active">设计速览</a><a href="#visual-architecture">架构与反馈闭环</a><a href="#visual-subsets">交互集合示例</a><a href="#visual-order">实施路线</a><a href="#section-1">1. System Overview</a><a href="#section-2">2. Current Codebase Status</a><a href="#section-3">3. Architecture Design</a><a href="#section-4">4. Core Component Design</a><a href="#section-5">5. Data Architecture</a><a href="#section-6">6. API and Integration Design</a><a href="#section-7">7. File Structure</a><a href="#section-8">8. Testing and Validation</a><a href="#section-9">9. Implementation Order</a><a href="#section-10">10. Architecture Quality Assessment</a><a href="#section-11">11. Key Decisions and Risks</a></nav><div class="meta">来源：<a href="41_design_riskcoordinator_groupbased_power_set_optimization.md">41_design_riskcoordinator_groupbased_power_set_optimization.md</a><br><br>本文是源 Markdown 的可视化阅读版本。完整正文保留原章节顺序；图示和示例辅助理解，不代表代码实施或运行验收。</div></aside>
+<main class="main" id="main"><div class="hero"><div class="eyebrow">REVERSAL GRID · RISK COORDINATOR</div><h1>基于 GroupBasedGrid 的<br>Power Set 集合优化</h1><p class="lead">把“选择哪些 detector”转为完整集合搜索，评估固定 elite 与候选子集共同形成的 ensemble 效果。</p><div class="badges"><span class="badge">按 role 独立优化</span><span class="badge">隐式 rank 搜索</span><span class="badge">复用 Training 生命周期</span><span class="badge">完整原文 + 可视化</span></div></div>
+
+<section class="panel" id="visual-overview" aria-labelledby="overview-title">
+<h2 id="overview-title">一次选择，评估一个完整集合</h2>
+<p class="intro">搜索变量是同 role 的临时候选集合 T；既有 elite E 在本次集合搜索中固定。最终选择来自累计已评估事实。</p>
+<div class="formula-row"><div class="formula"><strong>T ⊆ C</strong><span>C：同 role 候选全集<br>T：本次待选 detector 集合</span></div><div class="formula"><strong>E ∪ T</strong><span>真实评估对象<br>固定 elite 与待选集合共同聚合</span></div><div class="formula"><strong>|P(C)| = 2ᴺ</strong><span>N：排除既有 elite 后的候选数<br>包含空集与全集，按 rank 隐式搜索</span></div></div>
+<div class="role-lanes"><div class="role-lane"><strong>mkr_constrain</strong><p>候选 Cₘ → 独立集合 Training → 完整集合 Tₘ<br>使用该 role 的目标与约束。</p></div><div class="role-lane"><strong>opr_constrain</strong><p>候选 Cₒ → 独立集合 Training → 完整集合 Tₒ<br>使用该 role 的目标与约束。</p></div></div>
+<div class="callout">最终返回一个已评估的完整 subset；多个高分 subset 不能直接合并，合并后产生的集合需要重新评估。</div>
+</section>
+<section class="panel" id="visual-architecture" aria-labelledby="architecture-title"><h2 id="architecture-title">架构与反馈闭环</h2><p class="intro">复用现有 Training 生命周期与 GroupBasedGrid 搜索机制；集合语义封装在新 TrainingGrid 和 role context 边界。</p>
+<div class="flow" role="img" aria-label="候选与 elite 输入，按 role 建立 context，Training 搜索完整集合，Domain 评估与评分，返回真实 detector 并回写">
+  <div class="node"><span class="step">01 · 输入</span><b>SubGridRiskOptimized</b><small>临时候选 C + outer elite E<br>DetectorBundleBySubgrid</small></div>
+  <div class="node"><span class="step">02 · 边界归一化</span><b>RiskCoordinator</b><small>按 role 建立 typed context<br>稳定 member identity<br>策略级 runtime 映射</small></div>
+  <div class="node"><span class="step">03 · 集合搜索</span><b>RiskSubsetTrainingGrid</b><small>组合 GroupBasedGrid<br>subset rank → member indices<br>独立 store / checkpoint</small></div>
+  <div class="node"><span class="step">04 · 真实评估</span><b>Risk subset Domain</b><small>每策略 OR 聚合 E ∪ T<br>ensemble metrics → scoring<br>按现有 mean 口径聚合</small></div>
+  <div class="node"><span class="step">05 · 结果回写</span><b>一个最佳可行 subset</b><small>rank → member → detector<br>按 subgrid 拆解<br>ReversalGrid 回写本轮样本</small></div>
+</div>
+<div class="feedback">反馈闭环：Domain 的 <code>SCORES [athlete, score]</code> → GroupBasedGrid 保留 / 细分高分 rank 区间 → 下一轮集合采样。</div>
+
+<div class="boundary-grid"><div><b>候选 identity</b><code>(subgrid_id, detector_num)</code><br>跨 subgrid 相同 detector number 是不同成员。</div><div><b>计算 identity</b>一个成员 → 每策略 runtime detector id<br>bundle 局部 id 在 context 构建阶段完成映射。</div><div><b>本轮回写边界</b>仅替换 sampled_detectors，同步过滤 metric 映射；outer elite 在后续 outer feedback 累积。</div><div><b>存储边界</b><code>&lt;outer loop output&gt;/risk_ensemble/&lt;role&gt;/</code><br>集合 Training 使用独立 output 与 result store。</div></div></section>
+<section class="panel" id="visual-subsets" aria-labelledby="subsets-title"><h2 id="subsets-title">交互示例：3 个候选 → 8 个集合</h2><p class="intro">以下成员与二进制 signal 仅用于解释集合语义，不代表真实实验结果，也不展示 codec rank。选择任意集合，查看固定 elite 与候选 signal 的 OR 聚合。</p>
+<div class="member-controls"><label><input type="checkbox" data-member="0" checked>A = (risk_a, 7)</label><label><input type="checkbox" data-member="1">B = (risk_b, 7)</label><label><input type="checkbox" data-member="2">C = (risk_b, 12)</label></div>
+<div class="demo-layout"><div><div class="subset-grid" id="subset-choices" aria-label="全部八个示例集合"></div><p class="intro" style="font-size:13px;margin-top:14px">A 与 B 的 detector_num 同为 7，但 subgrid_id 不同，因此是两个独立候选。</p></div><div class="demo-result" aria-live="polite"><strong id="selected-subset">T = { A }</strong><p id="ensemble-set">评估 E ∪ T</p><div class="table-wrap"><table aria-label="示例 signal 与 OR 聚合"><thead><tr><th>输入</th><th>6 个示例时点的 signal</th></tr></thead><tbody id="signal-rows"></tbody></table></div><p id="selection-output"></p></div></div>
+<div class="callout warning">空集 T = ∅ 仍评估固定 baseline E。signal 聚合只是评估链路的一步，最终可行性与目标排名来自真实 ensemble metrics 和 role-specific scoring spec。</div>
+<div class="growth"><label for="candidate-count">候选数 N：<strong id="candidate-value">3</strong></label><input id="candidate-count" type="range" min="0" max="30" value="3"><output id="space-count" for="candidate-count">2³ = 8 个集合</output></div>
+<p class="intro" style="font-size:13px;margin-bottom:0">rank 空间增长不等于全部物化或全部评估。设计使用 group sampling、feedback 与 max_loop_num；最终选择范围是累计已评估集合。</p></section>
+<section class="panel" id="visual-order" aria-labelledby="order-title"><h2 id="order-title">实施路线：按依赖顺序推进</h2><ol class="timeline"><li>固定 typed context 与成员 identity</li><li>验证 power set codec、空集与全集</li><li>接通 TrainingGrid 生命周期与独立 store</li><li>实现集合 signal / risk metrics 评估</li><li>接通 scoring、feedback 与 checkpoint</li><li>接通 coordinator 模式分发与解码</li><li>接入 ReversalGrid 配置与 baseline-only runtime</li><li>同步协议、主入口与 focused / 回归测试</li></ol><p class="intro" style="font-size:13px;margin-bottom:0">路线来自源文档第 9 节；所有步骤均为设计计划，未标记为已实施。</p></section>
+
+<div class="document-head"><h2>完整设计正文</h2><p>以下保留源文档的 11 个章节、代码契约、文件清单、测试计划与关键决策。第 3.2 节流程图已转换为离线可读图示，原 Mermaid 定义可展开查看。</p></div>
+<article aria-label="完整源设计文档">
+<p>状态：设计文档，未实施<br/>
+范围：<code>ReversalGrid</code> risk subgrid 的本批次 detector 集合选择<br/>
+选择边界：<code>mkr_constrain</code> 与 <code>opr_constrain</code> 分 role 独立优化</p>
+<section class="source-section" id="section-1"><h2>1. System Overview</h2>
+<p>本次改造把 <code>RiskCoordinator</code> 的本批次选择器替换为可配置的集合搜索模式：对一个 role 下所有 risk subgrid 的临时候选 detector 建立候选全集，对候选全集的 power set 进行搜索；每个搜索元素是一个完整 detector 集合 <code>T</code>，评估 <code>elite ∪ T</code> 形成的 ensemble 效果，并按 role 对应的目标和约束选择一个最终集合。</p>
+<p>新模式继续由 <code>RiskCoordinator</code> 负责协调，但集合搜索本身由一个新的 <code>RiskSubsetTrainingGrid</code> 承载。该 TrainingGrid 组合现有 <code>GroupBasedGrid</code>，复用 <code>Training</code> 的 sampling、Domain、feedback、checkpoint 生命周期。</p>
+<p>本设计不改变以下边界：</p>
+<ul>
+<li><code>SubGridRiskOptimized</code> 负责本 subgrid 的 detector / metric 搜索和临时样本产生。</li>
+<li><code>RiskCoordinator</code> 负责跨 subgrid、同 role 的批次集合选择。</li>
+<li><code>ReversalGrid</code> 负责把选择结果回写到各 subgrid，并继续现有 loop bundle 导出。</li>
+<li>outer <code>elite_detectors</code> 仍由后续 outer feedback 累积；集合搜索阶段只把 elite 当固定 baseline。</li>
+</ul>
+</section><section class="source-section" id="section-2"><h2>2. Current Codebase Status</h2>
+<h3>2.1 当前实际调用链</h3>
+<pre><code class="language-text">Training.one_loop()
+  -&gt; ReversalGrid.sampling()
+     -&gt; SubGridRiskOptimized.sampling()
+        -&gt; _run_risk_training()
+           -&gt; RiskSamplingTrainingGrid
+              -&gt; GroupBasedGrid sampling / feedback
+              -&gt; RiskSamplingDomainBackend
+        -&gt; state.sampled_detectors = inner training survivors
+        -&gt; sample_metric_nums_by_detector(...)
+        -&gt; export selection_runtime
+        -&gt; build_selection_runtime_bundle()
+           -&gt; candidate_df + baseline_df + strategy runtimes
+
+  -&gt; ReversalGrid.export_sample_artifacts()
+     -&gt; _prepare_risk_ensemble()
+        -&gt; collect DetectorBundleBySubgrid
+        -&gt; RiskCoordinator.select_current_loop_ensemble()
+        -&gt; _apply_risk_selection()
+           -&gt; SubGridRiskOptimized.apply_risk_selection()
+        -&gt; export outer loop bundle
+
+  -&gt; ReversalDomainBackend
+     -&gt; detector signals
+     -&gt; role ensemble aggregation
+     -&gt; outer feedback
+     -&gt; elite update
+</code></pre>
+<p><code>SubGridRiskOptimized.sampling()</code> 当前已经在 inner training 后构建 selection runtime。<code>DetectorBundleBySubgrid</code> 包含：</p>
+<ul>
+<li><code>candidate_df</code>：本轮可供 coordinator 选择的 detector metrics；</li>
+<li><code>baseline_df</code>：该 subgrid 既有 outer elite 的 detector metrics；</li>
+<li><code>strategy_runtime_by_id</code>：每个策略的 signal matrix、prepared 数据和 starting equity。</li>
+</ul>
+<p>因此集合优化直接消费 selection runtime，不再重新运行 detector pipeline，也不把 inner training 的 <code>athlete</code> 当作跨 subgrid 的 detector identity。</p>
+<h3>2.2 当前 coordinator 的输出契约</h3>
+<p>当前 <code>RiskCoordinator.select_current_loop_ensemble()</code> 按 role 聚合 bundles，返回：</p>
+<pre><code class="language-python">RiskEnsembleSelection(
+    selected_by_subgrid={
+        "risk_subgrid_a": [detector_num, ...],
+        "risk_subgrid_b": [detector_num, ...],
+    },
+    metrics_by_role={...},
+)
+</code></pre>
+<p><code>ReversalGrid._apply_risk_selection()</code> 只替换本轮 <code>sampled_detectors</code>，并过滤对应的 <code>sampled_metric_nums_by_detector</code>。它不在 coordinator 阶段修改 <code>elite_detectors</code>。</p>
+</section><section class="source-section" id="section-3"><h2>3. Architecture Design</h2>
+<h3>3.1 数据和搜索定义</h3>
+<p>对一个 role 定义：</p>
+<ul>
+<li><code>E</code>：所有参与该 role 的既有 elite detector 集合，固定不变；</li>
+<li><code>C</code>：所有同 role risk subgrid 临时候选的并集；</li>
+<li><code>T</code>：待选 detector 集合，<code>T ⊆ C</code>；</li>
+<li>评估对象：<code>E ∪ T</code>；</li>
+<li>搜索空间：<code>P(C)</code>，包括空集和全集。</li>
+</ul>
+<p>已存在于 <code>E</code> 的 detector 不再重复作为新的选择变量，但其 signal 仍然进入每个 ensemble 评估。候选成员的 identity 必须是 <code>(subgrid_id, detector_num)</code>，不能只使用 <code>detector_num</code>，因为不同 subgrid 允许出现相同的 detector number。</p>
+<h3>3.2 总体架构图</h3>
+
+<div aria-label="候选与 elite 输入，按 role 建立 context，Training 搜索完整集合，Domain 评估与评分，返回真实 detector 并回写" class="flow" role="img">
+<div class="node"><span class="step">01 · 输入</span><b>SubGridRiskOptimized</b><small>临时候选 C + outer elite E<br/>DetectorBundleBySubgrid</small></div>
+<div class="node"><span class="step">02 · 边界归一化</span><b>RiskCoordinator</b><small>按 role 建立 typed context<br/>稳定 member identity<br/>策略级 runtime 映射</small></div>
+<div class="node"><span class="step">03 · 集合搜索</span><b>RiskSubsetTrainingGrid</b><small>组合 GroupBasedGrid<br/>subset rank → member indices<br/>独立 store / checkpoint</small></div>
+<div class="node"><span class="step">04 · 真实评估</span><b>Risk subset Domain</b><small>每策略 OR 聚合 E ∪ T<br/>ensemble metrics → scoring<br/>按现有 mean 口径聚合</small></div>
+<div class="node"><span class="step">05 · 结果回写</span><b>一个最佳可行 subset</b><small>rank → member → detector<br/>按 subgrid 拆解<br/>ReversalGrid 回写本轮样本</small></div>
+</div>
+<div class="feedback">反馈闭环：Domain 的 <code>SCORES [athlete, score]</code> → GroupBasedGrid 保留 / 细分高分 rank 区间 → 下一轮集合采样。</div>
+<details><summary>查看源文档 Mermaid 图定义（完整保留）</summary><pre><code class="language-mermaid">flowchart TD
+    A[SubGridRiskOptimized 临时候选] --&gt; B[DetectorBundleBySubgrid]
+    E[SubGridRiskOptimized outer elite] --&gt; B
+    B --&gt; C[RiskCoordinator 按 role 建立 RoleSubsetContext]
+    C --&gt; D[RiskSubsetTrainingGrid]
+    D --&gt; G[GroupBasedGrid]
+    G --&gt; H[GroupSearchSpace: subset rank 区间]
+    G --&gt; I[ParameterTreeCodec: rank -&gt; subset]
+    D --&gt; J[Risk subset domain backend]
+    J --&gt; K[按策略聚合 E union T]
+    K --&gt; L[RiskDescriptionEvaluator ensemble metrics]
+    L --&gt; M[entity scoring / SCORES]
+    M --&gt; G
+    D --&gt; N[选择累计事实中的最佳可行集合]
+    N --&gt; O[按 subgrid 拆解 detector_num]
+    O --&gt; P[RiskEnsembleSelection]
+    P --&gt; Q[ReversalGrid 回写 sampled_detectors]
+</code></pre></details>
+<h3>3.3 为什么复用现有 GroupBasedGrid</h3>
+<p>本设计将 power set 映射为稳定的 1-based subset rank：</p>
+<pre><code class="language-python">ParameterNode(
+    operation_type="combination",
+    param_name="members",
+    member_space_size=len(candidate_members),
+    member_counts=tuple(range(len(candidate_members) + 1)),
+)
+</code></pre>
+<p>当前 <code>ParameterNode</code> 的 <code>combination</code> operation 已支持无序、不重复组合；<code>member_counts=0..N</code> 后空间大小为 <code>2**N</code>。<code>ParameterTreeCodec.decode_detector_num(rank)</code> 可将 rank 解码为候选 member index tuple。</p>
+<p>随后使用：</p>
+<ul>
+<li><code>GroupSearchSpace</code> 管理 <code>[1, 2**N]</code> 的连续 rank 区间；</li>
+<li><code>GroupBasedGrid</code> 管理 loop state、sampling 和 feedback；</li>
+<li><code>GroupMethodSamplingPolicy</code> 从当前 rank group 取得集合样本；</li>
+<li><code>GroupScoreRefineFeedbackPolicy</code> 根据 <code>SCORES</code> 保留并细分高分 rank 区间。</li>
+</ul>
+<p>这里的 rank 只属于内部集合搜索 grid。<code>RiskSubsetTrainingGrid</code> 必须负责 rank 与真实 <code>(subgrid_id, detector_num)</code> 的边界转换，防止 rank 被误导出为 detector number。</p>
+<p>Power set 的 rank 具有稳定 codec 语义；搜索过程不物化全部集合，只对当前 group 采样的 rank 解码。搜索参数 <code>num_groups</code>、<code>num_top_groups</code>、<code>group_sampling_method</code> 和 <code>max_loop_num</code> 属于集合选择阶段，应与 <code>risk_sampling_inner_*</code> 配置分开。</p>
+</section><section class="source-section" id="section-4"><h2>4. Core Component Design</h2>
+<h3>4.1 <code>RiskSubsetMember</code></h3>
+<p>建议新增于 <code>para_grid/coordinators/risk_subset_context.py</code>：</p>
+<pre><code class="language-python">@dataclass(frozen=True, slots=True)
+class RiskSubsetMember:
+    member_index: int
+    subgrid_id: str
+    detector_num: int
+    runtime_detector_ids_by_strategy: Mapping[str, int]
+</code></pre>
+<p>职责是定义一个逻辑候选成员的稳定 identity，并提供该成员在每个策略 runtime 中对应的 detector id。一个逻辑成员可能在多个策略 runtime 中有不同的 runtime detector id，但在 power set 中只能占一个 bit / member index。</p>
+<h3>4.2 <code>RiskSubsetContext</code></h3>
+<p>同文件新增：</p>
+<pre><code class="language-python">@dataclass(frozen=True, slots=True)
+class RiskSubsetContext:
+    role: str
+    loop_num: int
+    members: tuple[RiskSubsetMember, ...]
+    baseline_runtime_detector_ids_by_strategy: Mapping[str, tuple[int, ...]]
+    strategy_runtime_by_id: Mapping[str, RuntimeSignalByStrategy]
+</code></pre>
+<p><code>members</code> 的顺序同时决定 power set codec 的 member index 和最终回写顺序。上下文构建在 coordinator 边界完成一次；Domain / compute 只接收这个已归一化的 typed context。</p>
+<h3>4.3 <code>RiskSubsetTrainingGrid</code></h3>
+<p>建议新增 <code>para_grid/grids/reversal/risk_subset_training_grid.py</code>。</p>
+<pre><code class="language-python">class RiskSubsetTrainingGrid:
+    def __init__(
+        self,
+        *,
+        grid: GroupBasedGrid,
+        context: RiskSubsetContext,
+        config: AppConfig,
+        project_name: str,
+        scoring_spec: EntityScoringSpec,
+        max_loop_num: int | None,
+    ) -&gt; None: ...
+
+    @property
+    def grid_id(self) -&gt; str: ...
+
+    @property
+    def loop_num(self) -&gt; int: ...
+
+    def sampling(self) -&gt; None: ...
+    def export_sample_artifacts(self) -&gt; None: ...
+    def materialize_samples(self) -&gt; None: ...
+    def apply_feedback(self) -&gt; None: ...
+    def update_grid(self) -&gt; None: ...
+    def is_finished(self) -&gt; bool: ...
+
+    def selected_subset(self) -&gt; tuple[RiskSubsetMember, ...]: ...
+</code></pre>
+<p>它组合现有 <code>GroupBasedGrid</code>，而不是复制 group search 算法。主要状态包括：</p>
+<ul>
+<li>当前内部 grid 的 subset rank 样本；</li>
+<li>本轮 <code>athlete -&gt; subset rank</code> 的 owner 映射；</li>
+<li>已评估 subset 的原始 ensemble metrics；</li>
+<li>当前最佳可行 subset 的 rank 和 metrics。</li>
+</ul>
+<p>内部 <code>BaseGridState.sampled_detectors</code> 存放 subset rank，不代表风险 detector。<code>export_sample_artifacts()</code> 只保存集合搜索审计信息和稳定 member identity，不生成新的 detector loop bundle；<code>materialize_samples()</code> 使用固定 runtime，保持 no-op。</p>
+<h3>4.4 <code>RiskSubsetDomainBackend</code></h3>
+<p>建议新增 <code>domain/backends/python/risk_subset_backend.py</code>，使用无状态纯函数作为业务入口：</p>
+<pre><code class="language-python">def run_risk_subset_domain(grid: RiskSubsetTrainingGrid) -&gt; None: ...
+
+def evaluate_sampled_subsets(
+    *,
+    grid: RiskSubsetTrainingGrid,
+    subset_ranks: Sequence[int],
+) -&gt; pd.DataFrame: ...
+</code></pre>
+<p><code>DomainOrchestrator.run()</code> 增加对 <code>RiskSubsetTrainingGrid</code> 的明确路由。该 backend 不重新加载 raw market/trades，也不重新编译 detector；它使用 <code>RiskSubsetContext.strategy_runtime_by_id</code> 中已准备好的 runtime。</p>
+<h3>4.5 集合评估函数</h3>
+<p>建议新增 <code>domain/backends/python/compute/risk/ensemble_subset_eval.py</code>：</p>
+<pre><code class="language-python">def evaluate_risk_subset(
+    *,
+    context: RiskSubsetContext,
+    member_indices: Sequence[int],
+) -&gt; Mapping[str, float]: ...
+
+def evaluate_risk_subsets(
+    *,
+    context: RiskSubsetContext,
+    member_indices_by_subset: Mapping[int, Sequence[int]],
+) -&gt; pd.DataFrame: ...
+</code></pre>
+<p>每个 subset 的计算链路为：</p>
+<pre><code class="language-text">member indices
+  -&gt; baseline runtime detector ids + selected member runtime detector ids
+  -&gt; aggregate_signal_columns(..., method="or")
+  -&gt; RiskDescriptionEvaluator.compute_ensemble_metrics()
+  -&gt; 每策略得到 role ensemble metrics
+  -&gt; 按现有策略 mean 口径聚合
+</code></pre>
+<p>该模块复用 <code>domain.backends.python.compute.ensemble.aggregate_signal_columns</code> 和 <code>RiskDescriptionEvaluator</code>。它属于 Layer B，不新增 <code>isinstance</code>、<code>ndim</code>、<code>dtype</code>、<code>shape</code> 校验，也不新增 <code>_require_*</code>、<code>_normalize_*</code>、<code>_resolve_*</code> 访问或校验壳函数。</p>
+<h3>4.6 集合评分</h3>
+<p>建议新增 <code>domain/backends/python/scoring/risk_subset_scoring.py</code>：</p>
+<pre><code class="language-python">def build_risk_subset_scoring_frames(
+    *,
+    subset_metrics_by_strategy: pd.DataFrame,
+    scoring_spec: EntityScoringSpec,
+    subset_ranks: Sequence[int],
+    loop_num: int,
+) -&gt; EntityScoringResult: ...
+
+def select_best_feasible_subset(
+    *,
+    subset_metrics_df: pd.DataFrame,
+    scoring_spec: EntityScoringSpec,
+) -&gt; tuple[int | None, dict[str, float]]: ...
+</code></pre>
+<p>集合的 entity key 是 <code>athlete</code>，每个 athlete 对应一个完整 subset。<code>SCORES</code> 继续只写现有 group feedback 所需的 <code>[athlete, score]</code> 最小结构；subset rank 通过 grid 的 owner 映射维护。</p>
+<p>最终选择必须从累计的、已评估集合事实中选出一个完整 subset。不能把多个 <code>score=1</code> 的 subset 合并，因为合并结果是新的、未必被评估过的集合。</p>
+</section><section class="source-section" id="section-5"><h2>5. Data Architecture</h2>
+<h3>5.1 Role context 的构建</h3>
+<p><code>RiskCoordinator</code> 在每个 role 内执行：</p>
+<ol>
+<li>按 <code>(subgrid_id, detector_num)</code> 收集 candidate rows；</li>
+<li>排除已经属于该 subgrid baseline 的候选成员；</li>
+<li>以稳定键排序，分配 <code>member_index</code>；</li>
+<li>合并每个 subgrid 的 selection runtime，使不同 bundle 的局部 <code>detector_id</code> 不被误认为全局 id；</li>
+<li>为每个策略建立 baseline runtime detector id tuple；</li>
+<li>生成 <code>RiskSubsetContext</code>。</li>
+</ol>
+<p><code>candidate_df</code> / <code>baseline_df</code> 的原有 bundle 契约继续保留。跨 subgrid 合并时，逻辑成员 identity 使用 <code>(subgrid_id, detector_num)</code>；signal matrix 的 runtime identity 使用 strategy-specific <code>detector_id</code> 映射。不可依赖不同 selection runtime bundle 的 detector id 恰好全局唯一。</p>
+<h3>5.2 集合评估结果</h3>
+<p>内部结果最小包含：</p>
+<pre><code class="language-text">athlete
+subset_rank
+strategy_id
+role
+objective metric columns
+constraint metric columns
+</code></pre>
+<p>每个 subset 在每个 strategy 上先计算完整 <code>elite ∪ subset</code> ensemble，再以现有跨 strategy 聚合口径形成 subset-level objective / constraint。缺少可行 subset 时，由 role-level 选择函数返回明确的无结果状态；不静默把未评估的临时候选当成已选结果。</p>
+<h3>5.3 存储和 checkpoint</h3>
+<p>集合 Training 使用独立 result store 和独立 project output：</p>
+<pre><code class="language-text">&lt;outer loop output&gt;/risk_ensemble/&lt;role&gt;/
+</code></pre>
+<p>不能复用外层或 inner risk sampling 的 <code>SCORES</code>、<code>SPLIT_HISTORY</code>，避免不同 grid 的 athlete 含义冲突。完整实验产物仍写入 <code>D:\data\grid-sqx\codex\&lt;experiment&gt;</code>；仓库只保存设计、配置、测试和轻量 artifact pointer。</p>
+<p><code>Training.serialize()</code> 的 checkpoint 必须能够恢复：</p>
+<ul>
+<li>role；</li>
+<li>固定 candidate member 顺序；</li>
+<li>baseline runtime identity；</li>
+<li><code>ParameterTreeCodec</code> 的候选规模；</li>
+<li>当前 GroupBasedGrid search space；</li>
+<li>已评估 subset metrics。</li>
+</ul>
+<p>恢复时不能用另一批候选或另一批策略 runtime 替换原 context。</p>
+</section><section class="source-section" id="section-6"><h2>6. API and Integration Design</h2>
+<h3>6.1 <code>RiskEnsemblePolicy</code></h3>
+<p>修改 <code>para_grid/coordinators/risk_ensemble_policy.py</code>：</p>
+<pre><code class="language-python">@dataclass(frozen=True, slots=True)
+class RiskSubsetSearchConfig:
+    num_groups: int
+    num_top_groups: int
+    group_sampling_method: str
+    max_loop_num: int | None
+
+@dataclass(frozen=True, slots=True)
+class RiskEnsemblePolicy:
+    optimizer_mode: Literal["greedy", "subset_grid"] = "greedy"
+    subset_search: RiskSubsetSearchConfig | None = None
+    ...
+</code></pre>
+<p>配置解析属于边界层；非法 mode、非正 group 参数和不支持的 sampling method 在配置入口明确报错。默认 mode 的选择由显式配置决定，不能在 coordinator 中根据候选数量隐式切换。</p>
+<h3>6.2 <code>RiskCoordinator</code></h3>
+<p>修改 <code>para_grid/coordinators/risk_coordinator.py</code>：</p>
+<pre><code class="language-python">class RiskCoordinator:
+    def select_current_loop_ensemble(
+        self,
+        *,
+        loop_num: int,
+        bundles: Sequence[DetectorBundleBySubgrid],
+        strategy_ids: Sequence[str],
+    ) -&gt; RiskEnsembleSelection: ...
+</code></pre>
+<p>保留现有对外选择结果契约。内部按 role 分发：</p>
+<pre><code class="language-text">optimizer_mode == "greedy"
+  -&gt; 现有选择路径
+
+optimizer_mode == "subset_grid"
+  -&gt; build_risk_subset_context()
+  -&gt; build RiskSubsetTrainingGrid
+  -&gt; Training(grid, subset domain).run()
+  -&gt; select_best_feasible_subset()
+  -&gt; subset members 按 subgrid 拆解
+  -&gt; RiskEnsembleSelection
+</code></pre>
+<p>新模式不把集合 rank 直接返回给 <code>ReversalGrid</code>。返回前必须完成 rank → member → <code>(subgrid_id, detector_num)</code> 的解码。</p>
+<h3>6.3 <code>ReversalGrid</code></h3>
+<p>修改 <code>para_grid/grids/reversal/reversal_grid.py</code>：</p>
+<ul>
+<li>保持 <code>_collect_runtime_risk_inputs()</code> 收集真实的 <code>last_runtime_bundle</code>；</li>
+<li>在 <code>_prepare_risk_ensemble()</code> 中继续调用 coordinator；</li>
+<li>传递 subset search 配置或在 coordinator 初始化时注入；</li>
+<li>保持 <code>_apply_risk_selection()</code> 只回写本轮 sampled detector 和其 metric 映射；</li>
+<li>保持 outer elite 的更新属于后续 feedback 阶段。</li>
+</ul>
+<p>如果某个 subgrid 本轮没有新 candidate，但仍有既有 elite，它必须能作为 baseline-only 来源参与 role context。该场景的 runtime 准备应复用现有 selection runtime builder；不在 coordinator 内重新访问 raw data。</p>
+<h3>6.4 Domain 路由和协议说明</h3>
+<p>修改 <code>domain/orchestrator.py</code>，增加 <code>RiskSubsetTrainingGrid</code> 路由。同步更新：</p>
+<ul>
+<li><code>para_grid/interfaces/base_grid.py</code> 的实现类列表和 Grid protocol 注释；</li>
+<li><code>para_grid/interfaces/training_grid.py</code> 的 TrainingGrid 实现类列表；</li>
+<li>新 Grid 类 docstring，声明满足的 protocol。</li>
+</ul>
+</section><section class="source-section" id="section-7"><h2>7. File Structure</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>文件</th>
+<th>设计职责</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>新增</td>
+<td><code>para_grid/coordinators/risk_subset_context.py</code></td>
+<td>role-level typed member、runtime identity、baseline/candidate 合并</td>
+</tr>
+<tr>
+<td>新增</td>
+<td><code>para_grid/grids/reversal/risk_subset_training_grid.py</code></td>
+<td>组合 <code>GroupBasedGrid</code>，维护 subset rank、athlete 映射和累计事实</td>
+</tr>
+<tr>
+<td>新增</td>
+<td><code>domain/backends/python/risk_subset_backend.py</code></td>
+<td>集合 Training 的 Domain 入口和 <code>SCORES</code> 写入</td>
+</tr>
+<tr>
+<td>新增</td>
+<td><code>domain/backends/python/compute/risk/ensemble_subset_eval.py</code></td>
+<td>评估 <code>elite ∪ subset</code> 的 role ensemble metrics</td>
+</tr>
+<tr>
+<td>新增</td>
+<td><code>domain/backends/python/scoring/risk_subset_scoring.py</code></td>
+<td>集合 entity scoring 和最终可行集合选择</td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>para_grid/coordinators/risk_ensemble_policy.py</code></td>
+<td>增加 <code>optimizer_mode</code> 和集合搜索配置</td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>para_grid/coordinators/risk_coordinator.py</code></td>
+<td>新模式分发、Training 调度、集合解码和结果回写映射</td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>para_grid/grids/reversal/reversal_grid.py</code></td>
+<td>新配置注入、baseline-only 输入接入、保持外层回写边界</td>
+</tr>
+<tr>
+<td>按需修改</td>
+<td><code>para_grid/grids/reversal/sub_grid_risk_optimized.py</code></td>
+<td>为无新候选但有 elite 的 subgrid 完成 selection runtime</td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>domain/orchestrator.py</code></td>
+<td>路由 <code>RiskSubsetTrainingGrid</code></td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>para_grid/interfaces/base_grid.py</code></td>
+<td>同步 BaseGrid 实现类说明</td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>para_grid/interfaces/training_grid.py</code></td>
+<td>同步 TrainingGrid 实现类说明</td>
+</tr>
+<tr>
+<td>修改</td>
+<td><code>main_reversal_risk_sampling_experiment.py</code></td>
+<td>显式启用模式和搜索参数</td>
+</tr>
+<tr>
+<td>测试</td>
+<td><code>tests/test_risk_subset_*.py</code></td>
+<td>新增集合编码、评估、反馈、回写测试</td>
+</tr>
+<tr>
+<td>测试修改</td>
+<td><code>tests/test_risk_coordinator.py</code></td>
+<td>保证 greedy 与 subset-grid 两种模式及 role 隔离</td>
+</tr>
+</tbody>
+</table></div>
+<p>直接复用的模块：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>现有模块</th>
+<th>复用方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>para_grid/grids/group_based_grid.py</code></td>
+<td>subset rank 的 grid 生命周期</td>
+</tr>
+<tr>
+<td><code>para_grid/components/search_spaces/group_search_space.py</code></td>
+<td>rank 区间维护</td>
+</tr>
+<tr>
+<td><code>para_grid/components/policies/sampling_policy.py</code></td>
+<td>group sampling</td>
+</tr>
+<tr>
+<td><code>para_grid/components/policies/feedback_policy.py</code></td>
+<td>group refine 和 <code>SCORES</code> 读取</td>
+</tr>
+<tr>
+<td><code>para_grid/components/parameter_tree/parameter_tree.py</code></td>
+<td>power set 的 combination algebra</td>
+</tr>
+<tr>
+<td><code>para_grid/components/codecs/parameter_tree_codec.py</code></td>
+<td>rank 到 member index 的解码</td>
+</tr>
+<tr>
+<td><code>training/training.py</code></td>
+<td>标准 Training 生命周期和 checkpoint</td>
+</tr>
+<tr>
+<td><code>domain/backends/python/compute/ensemble/ensemble_aggregation.py</code></td>
+<td>signal OR 聚合</td>
+</tr>
+<tr>
+<td><code>domain/backends/python/compute/risk/risk_description.py</code></td>
+<td>role ensemble metrics</td>
+</tr>
+<tr>
+<td><code>domain/backends/python/scoring/entity_scoring_function.py</code></td>
+<td>objectives / constraints / penalty scoring</td>
+</tr>
+</tbody>
+</table></div>
+<p>不建议修改 <code>GroupBasedGrid</code>、<code>GroupSearchSpace</code> 或现有 <code>ParameterTree</code> 的业务语义；集合语义放在新 TrainingGrid 和 role context 边界。</p>
+</section><section class="source-section" id="section-8"><h2>8. Testing and Validation</h2>
+<h3>8.1 单元行为测试</h3>
+<ul>
+<li>3 个 candidate 解码出 8 个唯一 subset，包含空集和全集；</li>
+<li>member index 顺序稳定，<code>(subgrid_id, detector_num)</code> 不因输入 bundle 顺序变化而变化；</li>
+<li>同一 detector number 出现在两个 subgrid 时仍是两个独立成员；</li>
+<li>一个逻辑成员在多策略中拥有不同 runtime detector id 时，只产生一个集合成员；</li>
+<li><code>elite ∪ empty_subset</code> 的 signal 和 metrics 正确；</li>
+<li>candidate + elite 的 signal 聚合与直接参考实现一致；</li>
+<li>集合 constraint 使用 ensemble metrics，而不是单 detector metrics；</li>
+<li>最终只返回一个完整 subset，并正确拆回 <code>selected_by_subgrid</code>。</li>
+</ul>
+<h3>8.2 Training 集成测试</h3>
+<ul>
+<li>athlete 与 subset rank 一一对应；</li>
+<li><code>SCORES</code> 只反馈当前集合样本，不污染 inner risk sampling 或 outer store；</li>
+<li>group refine 后 subset rank 区间正确更新；</li>
+<li><code>max_loop_num</code> 结束时仍能从累计事实中选最终集合；</li>
+<li>checkpoint 恢复后 member 顺序、baseline、codec size 和已评估事实保持一致；</li>
+<li>baseline-only role、空 candidate、无可行 subset 都有明确行为。</li>
+</ul>
+<h3>8.3 ReversalGrid 集成测试</h3>
+<ul>
+<li><code>_prepare_risk_ensemble()</code> 按 role 分别运行；</li>
+<li>subset-grid 选择结果回写后，outer export 只包含 <code>elite ∪ selected sampled</code>；</li>
+<li><code>sampled_metric_nums_by_detector</code> 与 selected detector 同步过滤；</li>
+<li>outer <code>elite_detectors</code> 在 coordinator 阶段不被修改；</li>
+<li>后续 outer feedback 仍能将符合条件的新 detector / metric 加入 elite；</li>
+<li>现有 greedy mode 行为保持可用。</li>
+</ul>
+<h3>8.4 校验边界</h3>
+<ul>
+<li>配置、外部 JSON、checkpoint schema 属于 Layer A，可增加明确异常和对应 <code>pytest.raises</code> 测试；</li>
+<li><code>RiskSubsetContext</code>、集合评估、scoring 属于 Layer B，依赖上游 typed contract，不增加重复 shape / dtype / type 校验；</li>
+<li>本设计阶段新增生产校验数：0；删除生产校验数：0。实施中如增加边界校验，必须在开发报告逐条说明必要性。</li>
+</ul>
+</section><section class="source-section" id="section-9"><h2>9. Implementation Order</h2>
+<ol>
+<li>先固定 <code>RiskSubsetMember</code>、<code>RiskSubsetContext</code> 和 <code>(subgrid_id, detector_num)</code> identity 规则。</li>
+<li>增加 power set codec 构建函数和小规模行为测试，确认空集、全集、稳定 rank。</li>
+<li>实现 <code>RiskSubsetTrainingGrid</code>，先接通 <code>GroupBasedGrid</code> 生命周期和独立 result store。</li>
+<li>实现集合 signal / risk metric 评估，复用现有 <code>SignalMatrix</code>、聚合函数和 evaluator。</li>
+<li>接通 scoring、<code>SCORES</code> 和 group feedback，验证 Training checkpoint。</li>
+<li>在 <code>RiskCoordinator</code> 增加 <code>optimizer_mode</code> 分发和最终集合解码。</li>
+<li>修改 <code>ReversalGrid</code> 配置注入及 baseline-only runtime 接入。</li>
+<li>更新 protocol 注释、主入口配置和测试；再运行 focused suite 及 ReversalGrid 回归。</li>
+</ol>
+</section><section class="source-section" id="section-10"><h2>10. Architecture Quality Assessment</h2>
+<h3>Design Completeness: 19/20</h3>
+<ul>
+<li>Component boundaries: 10/10</li>
+<li>Interfaces and data flows: 9/10</li>
+<li>说明：候选收集、subset grid、Domain 评估、集合 scoring、outer 回写均有明确边界；checkpoint 和 baseline-only 场景已纳入设计。</li>
+</ul>
+<h3>Technology Selection Soundness: 19/20</h3>
+<ul>
+<li>Technology fits requirements: 10/10</li>
+<li>Consistency and maintainability: 9/10</li>
+<li>说明：复用现有 Python、pandas、numpy、<code>SignalMatrix</code>、<code>RiskDescriptionEvaluator</code>、<code>GroupBasedGrid</code> 和 <code>Training</code>，不引入新的运行时服务；集合 rank 只是 grid 内部坐标。</li>
+</ul>
+<h3>Implementation Feasibility: 18/20</h3>
+<ul>
+<li>Team and repository fit: 7/7</li>
+<li>Risks manageable: 6/7</li>
+<li>Complexity: 5/6</li>
+<li>说明：主要工作是新增 role context 与 TrainingGrid，并接通独立 Domain；风险集中在跨 subgrid runtime identity、checkpoint 持久化和 baseline-only 输入。</li>
+</ul>
+<p><strong>Total Score: 56/60</strong><br/>
+<strong>Conclusion: Architecture plan is complete and feasible.</strong></p>
+</section><section class="source-section" id="section-11"><h2>11. Key Decisions and Risks</h2>
+<ul>
+<li><strong>Decision 1</strong>：按 <code>mkr_constrain</code> / <code>opr_constrain</code> 分 role 建立独立 power set。→ 与现有 risk metrics、constraints 和 evaluator 输出边界一致。</li>
+<li><strong>Decision 2</strong>：使用 <code>ParameterNode</code> 的 <code>combination</code> operation 表示 power set。→ 复用现有无序组合和 rank/unrank 能力，不新增重复 codec algebra。</li>
+<li><strong>Decision 3</strong>：新建 <code>RiskSubsetTrainingGrid</code>，组合现有 <code>GroupBasedGrid</code>。→ 集合 rank 的语义在新边界封装，现有 group grid 保持单一契约。</li>
+<li><strong>Decision 4</strong>：每个 subset 评估 <code>elite ∪ subset</code> 的真实 ensemble metrics。→ 集合 scoring 直接使用最终评估对象。</li>
+<li><strong>Decision 5</strong>：最终返回一个完整 subset，再按 subgrid 拆解。→ 防止把多个已评分集合错误合并成未评估集合。</li>
+<li><strong>Decision 6</strong>：保留 <code>RiskEnsembleSelection</code> 对外结果契约。→ <code>ReversalGrid</code> 和 <code>SubGridRiskOptimized</code> 只需消费原 detector selection 结构。</li>
+<li><strong>Risk 1</strong>：候选数量增大时 power set rank 空间增长。→ 使用隐式 rank、group sampling、feedback 和 <code>max_loop_num</code>，不物化全部 subset。</li>
+<li><strong>Risk 2</strong>：不同 bundle 的 runtime detector id 可能局部重复。→ 在 role context 构建阶段建立策略级 runtime identity 映射，compute 不负责修复 identity。</li>
+<li><strong>Risk 3</strong>：无新候选的 subgrid 仍有 elite。→ 将 baseline-only runtime 纳入收集契约，不能因没有 <code>last_runtime_bundle</code> 就丢失 baseline。</li>
+<li><strong>Risk 4</strong>：集合搜索的 <code>SCORES</code> 与 inner risk sampling 的 athlete 语义冲突。→ 使用独立 project output 和 result store，subset rank 只在 <code>RiskSubsetTrainingGrid</code> 内解释。</li>
+<li><strong>Risk 5</strong>：配置与实际实现的目标/约束字段不一致。→ 集合 scoring spec 从 <code>RiskEnsemblePolicy</code> 的 role-specific 配置显式生成，不复用 inner risk sampling 的默认 spec。</li>
+</ul></section></article>
+<footer class="footer">源文档：<a href="41_design_riskcoordinator_groupbased_power_set_optimization.md">41_design_riskcoordinator_groupbased_power_set_optimization.md</a><br>阅读版生成日期：2026-10-02 · 无外部资源依赖 · 支持离线阅读与打印。<br>状态依据源文档：设计文档，未实施。架构评估 56/60 为源文档自评。</footer></main></div>
+<script>
+const themeButton = document.getElementById('theme-button');
+themeButton.addEventListener('click', () => {
+  const dark = document.documentElement.dataset.theme !== 'dark';
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  themeButton.textContent = dark ? '浅色阅读' : '深色阅读';
+  themeButton.setAttribute('aria-pressed', String(dark));
+});
+document.getElementById('print-button').addEventListener('click', () => window.print());
+const members = [
+  {label:'A', subgrid:'risk_a', number:7, signal:[0,1,0,0,1,0]},
+  {label:'B', subgrid:'risk_b', number:7, signal:[0,0,1,0,1,0]},
+  {label:'C', subgrid:'risk_b', number:12, signal:[0,0,0,1,0,1]}
+];
+const baseline = [1,0,0,0,0,0];
+const memberInputs = [...document.querySelectorAll('[data-member]')];
+const choices = document.getElementById('subset-choices');
+function subsetName(mask) {
+  const labels = members.filter((member,index) => mask & (1 << index)).map(member => member.label);
+  return labels.length ? '{ ' + labels.join(', ') + ' }' : '∅';
+}
+for (let mask = 0; mask < 8; mask += 1) {
+  const choice = document.createElement('button');
+  choice.type = 'button';
+  choice.textContent = subsetName(mask);
+  choice.setAttribute('aria-pressed', 'false');
+  choice.addEventListener('click', () => {
+    memberInputs.forEach((input,index) => { input.checked = Boolean(mask & (1 << index)); });
+    updateSubset();
+  });
+  choices.appendChild(choice);
+}
+function updateSubset() {
+  const selected = members.filter((member,index) => memberInputs[index].checked);
+  const mask = memberInputs.reduce((value,input,index) => value + (input.checked ? 1 << index : 0), 0);
+  [...choices.children].forEach((choice,index) => choice.setAttribute('aria-pressed', String(index === mask)));
+  document.getElementById('selected-subset').textContent = 'T = ' + subsetName(mask);
+  document.getElementById('ensemble-set').textContent = '评估 E ∪ T = { elite' + (selected.length ? ', ' + selected.map(member => member.label).join(', ') : '') + ' }';
+  const combined = baseline.map((value,index) => selected.some(member => member.signal[index]) || value ? 1 : 0);
+  const rows = [{label:'固定 elite E',signal:baseline}, ...selected, {label:'OR 聚合 E ∪ T',signal:combined}];
+  document.getElementById('signal-rows').replaceChildren(...rows.map(row => {
+    const line = document.createElement('tr');
+    const label = document.createElement('td');
+    const signal = document.createElement('td');
+    const code = document.createElement('code');
+    label.textContent = row.label;
+    code.textContent = row.signal.join(' · ');
+    signal.appendChild(code);
+    line.append(label,signal);
+    return line;
+  }));
+  document.getElementById('selection-output').textContent = '若该集合最终入选，拆解为：risk_a [' + selected.filter(member => member.subgrid === 'risk_a').map(member => member.number).join(', ') + ']；risk_b [' + selected.filter(member => member.subgrid === 'risk_b').map(member => member.number).join(', ') + ']。';
+}
+memberInputs.forEach(input => input.addEventListener('change', updateSubset));
+updateSubset();
+const candidateCount = document.getElementById('candidate-count');
+function updateSpace() {
+  const count = Number(candidateCount.value);
+  document.getElementById('candidate-value').textContent = count;
+  document.getElementById('space-count').textContent = '2^' + count + ' = ' + (2 ** count).toLocaleString('zh-CN') + ' 个集合';
+}
+candidateCount.addEventListener('input', updateSpace);
+updateSpace();
+const sections = [...document.querySelectorAll('main section[id]')];
+const navLinks = [...document.querySelectorAll('.sidebar nav a')];
+if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+    const current = entries.filter(entry => entry.isIntersecting).sort((first,second) => first.boundingClientRect.top - second.boundingClientRect.top)[0];
+    if (!current) return;
+    navLinks.forEach(link => {
+      const active = link.hash === '#' + current.target.id;
+      link.classList.toggle('active',active);
+      if (active) link.setAttribute('aria-current','location'); else link.removeAttribute('aria-current');
+    });
+  }, {rootMargin:'-100px 0px -55% 0px'});
+  sections.forEach(section => observer.observe(section));
+}
+</script></body></html>
